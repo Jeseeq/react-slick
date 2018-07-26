@@ -86,7 +86,7 @@ export class InnerSlider extends React.Component {
     }
     this.ro = new ResizeObserver(() => {
       if (this.state.animating) {
-        this.onWindowResized(false); // don't set trackStyle hence don't break animation
+        // this.onWindowResized(false); // don't set trackStyle hence don't break animation
         this.callbackTimers.push(
           setTimeout(() => this.onWindowResized(), this.props.speed)
         );
