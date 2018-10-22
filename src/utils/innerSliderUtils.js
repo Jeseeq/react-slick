@@ -197,9 +197,11 @@ export const slideHandler = spec => {
       if (!infinite) finalSlide = 0;
       else if (slideCount % slidesToScroll !== 0)
         finalSlide = slideCount - slideCount % slidesToScroll;
-    } else if (!canGoNext(spec) && animationSlide > currentSlide) {
-      animationSlide = finalSlide = currentSlide;
-    } else if (centerMode && animationSlide >= slideCount) {
+    }
+    // else if (!canGoNext(spec) && animationSlide > currentSlide) {
+    //   animationSlide = finalSlide = currentSlide;
+    // }
+    else if (centerMode && animationSlide >= slideCount) {
       animationSlide = infinite ? slideCount : slideCount - 1;
       finalSlide = infinite ? 0 : slideCount - 1;
     } else if (animationSlide >= slideCount) {
@@ -717,7 +719,8 @@ export const getTrackLeft = spec => {
   if (!vertical) {
     targetLeft = slideIndex * slideWidth * -1 + slideOffset;
   } else {
-    targetLeft = slideIndex * slideHeight * -1 + verticalOffset;
+    const stopIndex = spec.slidesToShow < spec.slideCount ? spec.slideCount - spec.slidesToShow : slideIndex
+    targetLeft = Math.min(stopIndex, slideIndex) * slideHeight * -1 + verticalOffset;
   }
 
   if (variableWidth === true) {
