@@ -197,11 +197,9 @@ export const slideHandler = spec => {
       if (!infinite) finalSlide = 0;
       else if (slideCount % slidesToScroll !== 0)
         finalSlide = slideCount - slideCount % slidesToScroll;
-    }
-    // else if (!canGoNext(spec) && animationSlide > currentSlide) {
-    //   animationSlide = finalSlide = currentSlide;
-    // }
-    else if (centerMode && animationSlide >= slideCount) {
+    } else if (!canGoNext(spec) && animationSlide > currentSlide) {
+      animationSlide = finalSlide = currentSlide;
+    } else if (centerMode && animationSlide >= slideCount) {
       animationSlide = infinite ? slideCount : slideCount - 1;
       finalSlide = infinite ? 0 : slideCount - 1;
     } else if (animationSlide >= slideCount) {
