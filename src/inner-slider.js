@@ -33,14 +33,19 @@ export class InnerSlider extends React.Component {
     super(props);
     this.list = null;
     this.track = null;
+    this.callbackTimers = [];
+    this.clickable = true;
+    this.debouncedResize = null;
     this.state = {
       ...initialState,
       currentSlide: this.props.initialSlide,
       slideCount: React.Children.count(this.props.children)
     };
-    this.callbackTimers = [];
-    this.clickable = true;
-    this.debouncedResize = null;
+    const srrState = this.computeSsrState();
+    this.state = {
+      ...this.state,
+      ...srrState
+    };
   }
   listRefHandler = ref => (this.list = ref);
   trackRefHandler = ref => (this.track = ref);
@@ -57,8 +62,7 @@ export class InnerSlider extends React.Component {
       this.list.style.height = maxHeight + "px";
     }
   };
-  componentWillMount = () => {
-    this.ssrInit();
+  initAndLazyLoad = () => {
     this.props.onInit && this.props.onInit();
     if (this.props.lazyLoad) {
       let slidesToLoad = getOnDemandLazySlides({
@@ -66,9 +70,11 @@ export class InnerSlider extends React.Component {
         ...this.state
       });
       if (slidesToLoad.length > 0) {
-        this.setState(prevState => ({
-          lazyLoadedList: prevState.lazyLoadedList.concat(slidesToLoad)
-        }));
+        this.setState(prevState => {
+          return {
+            lazyLoadedList: prevState.lazyLoadedList.concat(slidesToLoad)
+          };
+        });
         if (this.props.onLazyLoad) {
           this.props.onLazyLoad(slidesToLoad);
         }
@@ -76,11 +82,16 @@ export class InnerSlider extends React.Component {
     }
   };
   componentDidMount = () => {
+    this.initAndLazyLoad();
     let spec = { listRef: this.list, trackRef: this.track, ...this.props };
-    this.updateState(spec, true, () => {
-      this.adaptHeight();
-      this.props.autoplay && this.autoPlay("update");
-    });
+    setTimeout(
+      () =>
+        this.updateState(spec, true, () => {
+          this.adaptHeight();
+          this.props.autoplay && this.autoPlay("update");
+        }),
+      0
+    );
     if (this.props.lazyLoad === "progressive") {
       this.lazyLoadTimer = setInterval(this.progressiveLazyLoad, 1000);
     }
@@ -233,8 +244,7 @@ export class InnerSlider extends React.Component {
     }
     this.setState(updatedState, callback);
   };
-
-  ssrInit = () => {
+  computeSsrState = () => {
     if (this.props.variableWidth) {
       let trackWidth = 0,
         trackLeft = 0;
@@ -273,10 +283,10 @@ export class InnerSlider extends React.Component {
           trackStyle.left
         } + (100% - ${currentWidth}) / 2 ) `;
       }
-      this.setState({
+      return {
         trackStyle
-      });
-      return;
+      };
+      //return;
     }
     let childrenCount = React.Children.count(this.props.children);
     const spec = { ...this.props, ...this.state, slideCount: childrenCount };
@@ -295,10 +305,10 @@ export class InnerSlider extends React.Component {
       width: trackWidth + "%",
       left: trackLeft + "%"
     };
-    this.setState({
+    return {
       slideWidth: slideWidth + "%",
       trackStyle: trackStyle
-    });
+    };
   };
   checkImagesLoad = () => {
     let images = document.querySelectorAll(".slick-slide img");
@@ -403,7 +413,7 @@ export class InnerSlider extends React.Component {
         const { animating, ...firstBatch } = nextState;
         this.setState(firstBatch, () => {
           this.callbackTimers.push(
-            setTimeout(() => this.setState({ animating }), 10)
+            setTimeout(() => this.setState({ animating }), 100)
           );
           afterChange && afterChange(state.currentSlide);
           delete this.animationEndCallback;
