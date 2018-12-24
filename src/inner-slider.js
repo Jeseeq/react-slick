@@ -84,14 +84,10 @@ export class InnerSlider extends React.Component {
   componentDidMount = () => {
     this.initAndLazyLoad();
     let spec = { listRef: this.list, trackRef: this.track, ...this.props };
-    setTimeout(
-      () =>
-        this.updateState(spec, true, () => {
-          this.adaptHeight();
-          this.props.autoplay && this.autoPlay("update");
-        }),
-      0
-    );
+    this.updateState(spec, true, () => {
+      this.adaptHeight();
+      this.props.autoplay && this.autoPlay("update");
+    });
     if (this.props.lazyLoad === "progressive") {
       this.lazyLoadTimer = setInterval(this.progressiveLazyLoad, 1000);
     }
