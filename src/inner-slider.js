@@ -377,7 +377,7 @@ export class InnerSlider extends React.Component {
       }
     }
   };
-  slideHandler = (index, dontAnimate = false) => {
+  slideHandler = (index, options = {}) => {
     const {
       asNavFor,
       beforeChange,
@@ -385,6 +385,7 @@ export class InnerSlider extends React.Component {
       speed,
       afterChange
     } = this.props;
+    const {dontAnimate = false, secondary = false} = options
     // capture currentslide before state is updated
     const currentSlide = this.state.currentSlide;
     let { state, nextState } = slideHandler({
@@ -392,7 +393,8 @@ export class InnerSlider extends React.Component {
       ...this.props,
       ...this.state,
       trackRef: this.track,
-      useCSS: this.props.useCSS && !dontAnimate
+      useCSS: this.props.useCSS && !dontAnimate,
+      secondary,
     });
     if (!state) return;
     beforeChange && beforeChange(currentSlide, state.currentSlide);
@@ -403,7 +405,7 @@ export class InnerSlider extends React.Component {
     this.setState(state, () => {
       asNavFor &&
         asNavFor.innerSlider.state.currentSlide !== state.currentSlide &&
-        asNavFor.innerSlider.slideHandler(index);
+        asNavFor.innerSlider.slideHandler(index, {dontAnimate, secondary: true});
       if (!nextState) return;
       this.animationEndCallback = setTimeout(() => {
         const { animating, ...firstBatch } = nextState;
@@ -422,7 +424,7 @@ export class InnerSlider extends React.Component {
     let targetSlide = changeSlide(spec, options);
     if (targetSlide !== 0 && !targetSlide) return;
     if (dontAnimate === true) {
-      this.slideHandler(targetSlide, dontAnimate);
+      this.slideHandler(targetSlide, {dontAnimate});
     } else {
       this.slideHandler(targetSlide);
     }

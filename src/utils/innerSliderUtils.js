@@ -165,9 +165,12 @@ export const slideHandler = spec => {
     centerMode,
     slidesToScroll,
     slidesToShow,
-    useCSS
+    useCSS,
+    asNavFor,
+    secondary,
   } = spec;
-  if (waitForAnimate && animating) return {};
+  const secondaryAnimating = asNavFor && !secondary && asNavFor.innerSlider.state.animating
+  if (waitForAnimate && (animating || secondaryAnimating)) return {};
   let animationSlide = index,
     finalSlide,
     animationLeft,
