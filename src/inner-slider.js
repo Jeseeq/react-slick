@@ -222,6 +222,10 @@ export class InnerSlider extends React.Component {
     this.setState({
       animating: false
     });
+    // afterChange calls inside this callback, so call it before delete
+    if (this.animationEndCallback && spec.afterChange) {
+      spec.afterChange(spec.currentSlide)
+    }
     clearTimeout(this.animationEndCallback);
     delete this.animationEndCallback;
   };
@@ -404,14 +408,14 @@ export class InnerSlider extends React.Component {
     onLazyLoad && slidesToLoad.length > 0 && onLazyLoad(slidesToLoad);
     this.setState(state, () => {
       asNavFor &&
-        asNavFor.innerSlider.state.currentSlide !== state.currentSlide &&
+        asNavFor.innerSlider.state.currentSlide !== index &&
         asNavFor.innerSlider.slideHandler(index, {dontAnimate, secondary: true});
       if (!nextState) return;
       this.animationEndCallback = setTimeout(() => {
         const { animating, ...firstBatch } = nextState;
         this.setState(firstBatch, () => {
           this.callbackTimers.push(
-            setTimeout(() => this.setState({ animating }), 100)
+            setTimeout(() => this.setState({ animating }), 10)
           );
           afterChange && afterChange(state.currentSlide);
           delete this.animationEndCallback;
