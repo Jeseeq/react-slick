@@ -723,8 +723,11 @@ export const getTrackLeft = spec => {
   if (!vertical) {
     targetLeft = slideIndex * slideWidth * -1 + slideOffset;
   } else {
-    const stopIndex = spec.slidesToShow < spec.slideCount ? spec.slideCount - spec.slidesToShow : slideIndex
-    targetLeft = Math.min(stopIndex, slideIndex) * slideHeight * -1 + verticalOffset;
+    let stopIndex = slideIndex
+    if (!infinite && spec.slidesToShow < spec.slideCount) {
+      stopIndex = Math.min(spec.slideCount - spec.slidesToShow, slideIndex)
+    }
+    targetLeft = stopIndex * slideHeight * -1 + verticalOffset;
   }
 
   if (variableWidth === true) {
