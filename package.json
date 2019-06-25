@@ -1,6 +1,6 @@
 {
   "name": "react-slickest",
-  "version": "0.28",
+  "version": "1.0.0",
   "description": " React port of slick carousel",
   "main": "./lib",
   "files": [
