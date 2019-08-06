@@ -224,7 +224,7 @@ export class InnerSlider extends React.Component {
     });
     // afterChange calls inside this callback, so call it before delete
     if (this.animationEndCallback && spec.afterChange) {
-      spec.afterChange(spec.currentSlide)
+      spec.afterChange(spec.currentSlide);
     }
     clearTimeout(this.animationEndCallback);
     delete this.animationEndCallback;
@@ -279,9 +279,7 @@ export class InnerSlider extends React.Component {
       };
       if (this.props.centerMode) {
         let currentWidth = `${childrenWidths[this.state.currentSlide]}px`;
-        trackStyle.left = `calc(${
-          trackStyle.left
-        } + (100% - ${currentWidth}) / 2 ) `;
+        trackStyle.left = `calc(${trackStyle.left} + (100% - ${currentWidth}) / 2 ) `;
       }
       return {
         trackStyle
@@ -389,7 +387,7 @@ export class InnerSlider extends React.Component {
       speed,
       afterChange
     } = this.props;
-    const {dontAnimate = false, secondary = false} = options
+    const { dontAnimate = false, secondary = false } = options;
     // capture currentslide before state is updated
     const currentSlide = this.state.currentSlide;
     let { state, nextState } = slideHandler({
@@ -398,7 +396,7 @@ export class InnerSlider extends React.Component {
       ...this.state,
       trackRef: this.track,
       useCSS: this.props.useCSS && !dontAnimate,
-      secondary,
+      secondary
     });
     if (!state) return;
     beforeChange && beforeChange(currentSlide, state.currentSlide);
@@ -409,7 +407,10 @@ export class InnerSlider extends React.Component {
     this.setState(state, () => {
       asNavFor &&
         asNavFor.innerSlider.state.currentSlide !== index &&
-        asNavFor.innerSlider.slideHandler(index, {dontAnimate, secondary: true});
+        asNavFor.innerSlider.slideHandler(index, {
+          dontAnimate,
+          secondary: true
+        });
       if (!nextState) return;
       this.animationEndCallback = setTimeout(() => {
         const { animating, ...firstBatch } = nextState;
@@ -428,7 +429,7 @@ export class InnerSlider extends React.Component {
     let targetSlide = changeSlide(spec, options);
     if (targetSlide !== 0 && !targetSlide) return;
     if (dontAnimate === true) {
-      this.slideHandler(targetSlide, {dontAnimate});
+      this.slideHandler(targetSlide, { dontAnimate });
     } else {
       this.slideHandler(targetSlide);
     }
@@ -738,14 +739,18 @@ export class InnerSlider extends React.Component {
     }
     return (
       <div {...innerSliderProps}>
-        {!this.props.unslick ? prevArrow : ""}
+        {!this.props.unslick || this.props.alwaysDisplayControls
+          ? prevArrow
+          : ""}
         <div ref={this.listRefHandler} {...listProps}>
           <Track ref={this.trackRefHandler} {...trackProps}>
             {this.props.children}
           </Track>
         </div>
-        {!this.props.unslick ? nextArrow : ""}
-        {!this.props.unslick ? dots : ""}
+        {!this.props.unslick || this.props.alwaysDisplayControls
+          ? nextArrow
+          : ""}
+        {!this.props.unslick || this.props.alwaysDisplayControls ? dots : ""}
       </div>
     );
   };
